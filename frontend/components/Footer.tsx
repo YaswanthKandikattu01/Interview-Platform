@@ -57,9 +57,9 @@ export default function Footer() {
         <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
           <p>© {new Date().getFullYear()} MockInterview.in. All rights reserved.</p>
           <div className="flex gap-6">
-            <span>Terms of Service</span>
-            <span>Privacy Policy</span>
-            <span>Cancellation & Refund Policy</span>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/refund-policy" className="hover:text-white transition-colors">Cancellation & Refund Policy</Link>
           </div>
         </div>
       </div>
