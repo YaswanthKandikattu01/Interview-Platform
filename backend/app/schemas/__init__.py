@@ -16,6 +16,11 @@ from app.schemas.catalog import (
     CanonicalPricingResponse,
     UpdateCategoryPriceRequest,
 )
+from app.schemas.booking import (
+    FileUploadResponse,
+    CreateBookingDraftRequest,
+    BookingDetailResponse,
+)
 
 __all__ = [
     "RegisterRequest",
@@ -33,4 +38,7 @@ __all__ = [
     "InterviewCategoryResponse",
     "CanonicalPricingResponse",
     "UpdateCategoryPriceRequest",
+    "FileUploadResponse",
+    "CreateBookingDraftRequest",
+    "BookingDetailResponse",
 ]
