@@ -144,3 +144,10 @@ async def test_admin_pricing_update_flow(async_client: AsyncClient, db_session: 
         json={"amount_paise": 0}
     )
     assert invalid_price.status_code in [422, 400]
+
+    # 8. Restore canonical 19900 price so other tests retain the invariant
+    await async_client.put(
+        f"/api/v1/admin/categories/{cat_id}/price",
+        headers={"Authorization": f"Bearer {admin_token}"},
+        json={"amount_paise": 19900}
+    )
