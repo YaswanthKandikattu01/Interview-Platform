@@ -10,6 +10,12 @@ from app.schemas.auth import (
     AuthResponse,
 )
 from app.schemas.user import UpdateProfileRequest, CandidateFullProfileResponse
+from app.schemas.catalog import (
+    InterviewPriceResponse,
+    InterviewCategoryResponse,
+    CanonicalPricingResponse,
+    UpdateCategoryPriceRequest,
+)
 
 __all__ = [
     "RegisterRequest",
@@ -23,4 +29,8 @@ __all__ = [
     "AuthResponse",
     "UpdateProfileRequest",
     "CandidateFullProfileResponse",
+    "InterviewPriceResponse",
+    "InterviewCategoryResponse",
+    "CanonicalPricingResponse",
+    "UpdateCategoryPriceRequest",
 ]

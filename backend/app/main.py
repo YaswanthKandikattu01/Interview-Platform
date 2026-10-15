@@ -38,6 +38,13 @@ async def lifespan(app: FastAPI):
             )
             logger.info("Default administrator seeded successfully.")
 
+        # Seed categories and prices
+        from app.repositories.catalog_repository import CatalogRepository
+        cat_repo = CatalogRepository(session)
+        logger.info("Verifying/seeding catalog categories and ₹199 pricing...")
+        await cat_repo.seed_categories_and_prices()
+        logger.info("Catalog categories and pricing seeded successfully.")
+
     yield
     # Shutdown
     logger.info("Shutting down API service...")
