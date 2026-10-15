@@ -272,3 +272,68 @@ async def test_anti_idor_protection(async_client: AsyncClient, db_session: Async
         headers=headers_b
     )
     assert res_idor_file.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_instant_frictionless_booking_flow(async_client: AsyncClient, db_session: AsyncSession):
+    # Ensure categories seeded
+    cat_repo = CatalogRepository(db_session)
+    await cat_repo.seed_categories_and_prices()
+
+    # 1. Guest file upload without auth token
+    pdf_bytes = make_dummy_pdf()
+    up_res = await async_client.post(
+        "/api/v1/candidate/upload",
+        files={"file": ("guest_resume.pdf", pdf_bytes, "application/pdf")},
+        data={"file_purpose": "RESUME"},
+    )
+    assert up_res.status_code == 201
+    file_id = up_res.json()["file_id"]
+    assert file_id is not None
+
+    # 2. Instant booking creation with zero pre-sign-in barrier
+    instant_payload = {
+        "full_name": "Instant Test Candidate",
+        "email": "instant_test@example.com",
+        "phone": "+919876543999",
+        "category_slug": "frontend",
+        "resume_file_id": file_id,
+        "years_experience": 3.5,
+        "current_company": "Acme Tech",
+        "target_role": "Senior Frontend Engineer",
+        "technical_skills": ["React", "TypeScript", "Tailwind CSS"],
+        "job_description_text": "Looking for senior Next.js architect",
+        "additional_notes": "Please focus on SSR architecture",
+    }
+
+    res_booking = await async_client.post(
+        "/api/v1/candidate/bookings/instant",
+        json=instant_payload,
+    )
+    assert res_booking.status_code == 201
+    booking_data = res_booking.json()
+
+    assert booking_data["booking_reference"].startswith("MOCK-")
+    assert booking_data["amount_paise"] == 19900
+    assert booking_data["currency"] == "INR"
+    assert booking_data["order_id"].startswith("order_")
+    assert booking_data["access_token"] is not None
+    assert booking_data["category_title"] == "Frontend Mock Interview"
+
+    # 3. Candidate can immediately query booking using auto-provisioned token
+    cand_token = booking_data["access_token"]
+    booking_id = booking_data["booking_id"]
+
+    res_fetch = await async_client.get(
+        f"/api/v1/candidate/bookings/{booking_id}",
+        headers={"Authorization": f"Bearer {cand_token}"},
+    )
+    assert res_fetch.status_code == 200
+    fetched_data = res_fetch.json()
+    assert fetched_data["booking_reference"] == booking_data["booking_reference"]
+    assert fetched_data["amount_paise"] == 19900
+    assert fetched_data["currency"] == "INR"
+    assert fetched_data["duration_display"] == "45–60 minutes"
+    assert fetched_data["category_title"] == "Frontend Mock Interview"
+    assert fetched_data["target_role"] == "Senior Frontend Engineer"
+

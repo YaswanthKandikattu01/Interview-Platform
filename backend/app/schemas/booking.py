@@ -45,3 +45,33 @@ class BookingDetailResponse(BaseModel):
     status_headline: str
     status_message: str
     created_at: datetime
+
+
+class InstantBookingRequest(BaseModel):
+    category_slug: str = Field(..., min_length=2, max_length=50)
+    full_name: str = Field(..., min_length=2, max_length=150)
+    email: str = Field(..., min_length=5, max_length=255)
+    phone: str = Field(..., min_length=7, max_length=20)
+    years_experience: float = Field(..., ge=0.0, le=50.0)
+    target_role: str = Field(..., min_length=2, max_length=150)
+    current_company: Optional[str] = Field(None, max_length=150)
+    technical_skills: List[str] = Field(default_factory=list)
+    resume_file_id: str = Field(..., min_length=10)
+    jd_file_id: Optional[str] = None
+    jd_text: Optional[str] = Field(None, max_length=10000)
+    additional_notes: Optional[str] = Field(None, max_length=2000)
+
+
+class InstantBookingResponse(BaseModel):
+    booking_id: str
+    booking_reference: str
+    order_id: str
+    amount_paise: int
+    currency: str
+    key_id: str
+    access_token: str
+    candidate_name: str
+    candidate_email: str
+    category_title: str
+    duration_display: str
+

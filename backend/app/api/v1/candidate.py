@@ -1,9 +1,9 @@
 import os
-from typing import List
-from fastapi import APIRouter, Depends, UploadFile, File, Form, status, HTTPException
+from typing import List, Optional
+from fastapi import APIRouter, Depends, UploadFile, File, Form, status, HTTPException, Response
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.deps import get_db, get_current_user, get_current_verified_user
+from app.api.deps import get_db, get_current_user, get_current_verified_user, get_optional_current_user
 from app.models.user import User
 from app.services.booking_service import BookingService
 from app.repositories.user_repository import UserRepository
@@ -11,8 +11,11 @@ from app.schemas.booking import (
     FileUploadResponse,
     CreateBookingDraftRequest,
     BookingDetailResponse,
+    InstantBookingRequest,
+    InstantBookingResponse,
 )
 from app.schemas.user import UpdateProfileRequest, CandidateProfileResponse
+from app.core.config import settings
 
 router = APIRouter(prefix="/candidate", tags=["Candidate Experience"])
 
@@ -21,12 +24,13 @@ router = APIRouter(prefix="/candidate", tags=["Candidate Experience"])
 async def upload_document(
     file: UploadFile = File(...),
     file_purpose: str = Form(..., description="'RESUME' or 'JOB_DESCRIPTION'"),
-    current_user: User = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_optional_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Secure file upload with magic-byte validation, ZIP document inspection,
     random UUID path storage, and 5MB size limit.
+    Supports guest candidate upload prior to payment checkout.
     """
     if file_purpose not in ["RESUME", "JOB_DESCRIPTION"]:
         raise HTTPException(
@@ -35,7 +39,36 @@ async def upload_document(
         )
 
     service = BookingService(db)
-    return await service.upload_file(current_user.id, file, file_purpose)
+    user_id = current_user.id if current_user else None
+    return await service.upload_file(user_id, file, file_purpose)
+
+
+@router.post("/bookings/instant", response_model=InstantBookingResponse, status_code=status.HTTP_201_CREATED)
+async def create_instant_booking(
+    payload: InstantBookingRequest,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Frictionless instant booking: candidate provides their professional details,
+    the system auto-provisions their candidate profile, generates the Razorpay order
+    for 19,900 paise (₹199), and sets authentication cookies.
+    Zero password or email-verification barrier before payment.
+    """
+    service = BookingService(db)
+    res = await service.create_instant_booking(payload)
+
+    # Set auth cookie for immediate session
+    response.set_cookie(
+        key="access_token",
+        value=res.access_token,
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite=settings.COOKIE_SAMESITE,
+        path="/",
+    )
+    return res
 
 
 @router.post("/bookings/draft", response_model=BookingDetailResponse, status_code=status.HTTP_201_CREATED)

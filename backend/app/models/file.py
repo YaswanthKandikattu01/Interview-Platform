@@ -14,7 +14,7 @@ class StoredFile(Base):
     __tablename__ = "stored_files"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
+    user_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("users.id", ondelete="RESTRICT"), nullable=True)
     file_purpose: Mapped[str] = mapped_column(String(50), nullable=False)  # RESUME, JOB_DESCRIPTION
     original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
     sanitized_filename: Mapped[str] = mapped_column(String(255), nullable=False)

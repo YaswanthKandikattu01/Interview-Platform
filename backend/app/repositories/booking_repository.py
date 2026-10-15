@@ -33,7 +33,6 @@ class BookingRepository:
 
     async def save_stored_file(
         self,
-        user_id: str,
         file_purpose: str,
         original_filename: str,
         sanitized_filename: str,
@@ -41,6 +40,7 @@ class BookingRepository:
         file_size_bytes: int,
         mime_type: str,
         sha256_checksum: str,
+        user_id: Optional[str] = None,
     ) -> StoredFile:
         stored_file = StoredFile(
             id=str(uuid.uuid4()),

@@ -1,10 +1,13 @@
+import secrets
 from datetime import datetime, timezone
 import zoneinfo
 from typing import List, Optional
 from fastapi import HTTPException, UploadFile, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.catalog_repository import CatalogRepository
+from app.repositories.user_repository import UserRepository
 from app.core.file_security import process_and_store_upload
 from app.models.interview import InterviewRequest
 from app.models.file import StoredFile
@@ -12,6 +15,8 @@ from app.schemas.booking import (
     FileUploadResponse,
     CreateBookingDraftRequest,
     BookingDetailResponse,
+    InstantBookingRequest,
+    InstantBookingResponse,
 )
 from app.core.config import settings
 
@@ -187,3 +192,117 @@ class BookingService:
                 detail="File not found or access denied"
             )
         return file_rec
+
+    async def create_instant_booking(
+        self,
+        req: InstantBookingRequest
+    ) -> InstantBookingResponse:
+        # 1. Fetch category and authoritative active price snapshot
+        category = await self.cat_repo.get_category_by_slug(req.category_slug)
+        if not category:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Interview category '{req.category_slug}' not found."
+            )
+
+        price_snapshot = await self.cat_repo.get_active_price(category.id)
+        if not price_snapshot:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="No active price configuration found for category."
+            )
+
+        # 2. Get or auto-provision Candidate User
+        user_repo = UserRepository(self.db)
+        user = await user_repo.get_by_email(req.email)
+        if not user:
+            random_pwd = secrets.token_urlsafe(24)
+            user, _ = await user_repo.create_user(
+                email=req.email,
+                password=random_pwd,
+                full_name=req.full_name,
+                phone=req.phone,
+                role="CANDIDATE",
+                is_email_verified=True,
+                years_experience=req.years_experience,
+                current_company=req.current_company,
+                target_role=req.target_role,
+                technical_skills=req.technical_skills,
+            )
+        else:
+            user.full_name = req.full_name
+            user.phone = req.phone
+            if user.profile:
+                user.profile.years_experience = req.years_experience
+                user.profile.current_company = req.current_company.strip() if req.current_company else None
+                user.profile.target_role = req.target_role
+                user.profile.technical_skills = req.technical_skills
+            await self.db.commit()
+
+        # 3. Associate uploaded files with this user
+        resume_stmt = select(StoredFile).where(StoredFile.id == req.resume_file_id)
+        resume_file = (await self.db.execute(resume_stmt)).scalar_one_or_none()
+        if resume_file:
+            resume_file.user_id = user.id
+
+        if req.jd_file_id:
+            jd_stmt = select(StoredFile).where(StoredFile.id == req.jd_file_id)
+            jd_file = (await self.db.execute(jd_stmt)).scalar_one_or_none()
+            if jd_file:
+                jd_file.user_id = user.id
+
+        # 4. Create InterviewRequest draft with authoritative 19,900 paise price
+        booking = await self.repo.create_booking_draft(
+            candidate_id=user.id,
+            interview_type_id=category.id,
+            price_snapshot_id=price_snapshot.id,
+            amount_paise=price_snapshot.amount_paise,
+            resume_file_id=req.resume_file_id,
+            years_experience=req.years_experience,
+            target_role=req.target_role,
+            technical_skills=req.technical_skills,
+            current_company=req.current_company,
+            jd_file_id=req.jd_file_id,
+            jd_text=req.jd_text,
+            additional_notes=req.additional_notes,
+        )
+
+        # 5. Create Razorpay order
+        from app.integrations.razorpay_client import razorpay_client
+        from app.repositories.payment_repository import PaymentRepository
+        pay_repo = PaymentRepository(self.db)
+        
+        rzp_order = await razorpay_client.create_order(
+            amount_paise=price_snapshot.amount_paise,
+            receipt=booking.booking_reference,
+            notes={
+                "booking_id": booking.id,
+                "candidate_name": user.full_name,
+                "category_slug": category.slug,
+            }
+        )
+        await pay_repo.create_payment_order(
+            interview_request_id=booking.id,
+            razorpay_order_id=rzp_order["id"],
+            amount_paise=price_snapshot.amount_paise,
+            currency=price_snapshot.currency,
+        )
+
+        # 6. Generate access token for seamless candidate authentication
+        from app.core.security import create_access_token
+        access_token = create_access_token(user_id=user.id, role=user.role, email=user.email)
+
+        return InstantBookingResponse(
+            booking_id=booking.id,
+            booking_reference=booking.booking_reference,
+            order_id=rzp_order["id"],
+            amount_paise=price_snapshot.amount_paise,
+            currency=price_snapshot.currency,
+            key_id=settings.RAZORPAY_KEY_ID,
+            access_token=access_token,
+            candidate_name=user.full_name,
+            candidate_email=user.email,
+            category_title=category.title,
+            duration_display=price_snapshot.duration_display,
+        )
+

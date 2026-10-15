@@ -56,6 +56,31 @@ async def get_current_user(
     return user
 
 
+async def get_optional_current_user(
+    request: Request,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    db: AsyncSession = Depends(get_db),
+) -> Optional[User]:
+    token: Optional[str] = None
+    if creds and creds.credentials:
+        token = creds.credentials
+    else:
+        token = request.cookies.get("access_token")
+
+    if not token:
+        return None
+
+    try:
+        payload = decode_access_token(token)
+        if not payload or not payload.get("sub"):
+            return None
+        user_repo = UserRepository(db)
+        return await user_repo.get_by_id(payload["sub"])
+    except Exception:
+        return None
+
+
+
 async def get_current_verified_user(
     current_user: User = Depends(get_current_user),
 ) -> User:

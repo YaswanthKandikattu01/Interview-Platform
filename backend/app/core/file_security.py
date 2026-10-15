@@ -4,7 +4,7 @@ import re
 import uuid
 import hashlib
 import zipfile
-from typing import Tuple
+from typing import Tuple, Optional
 from fastapi import HTTPException, UploadFile, status
 from app.core.config import settings
 
@@ -68,8 +68,8 @@ def validate_file_magic_bytes(content: bytes, ext: str) -> str:
 
 async def process_and_store_upload(
     file: UploadFile,
-    user_id: str,
-    file_purpose: str,  # 'RESUME' or 'JOB_DESCRIPTION'
+    user_id: Optional[str] = None,
+    file_purpose: str = "RESUME",  # 'RESUME' or 'JOB_DESCRIPTION'
 ) -> Tuple[str, str, str, int, str, str]:
     """
     Reads, validates, calculates checksum, and securely saves an uploaded file.
@@ -108,7 +108,7 @@ async def process_and_store_upload(
 
     # Generate secure isolated storage location
     sanitized_name = sanitize_filename(original_name)
-    user_upload_dir = os.path.join(settings.UPLOAD_DIR, user_id)
+    user_upload_dir = os.path.join(settings.UPLOAD_DIR, user_id or "guest")
     os.makedirs(user_upload_dir, exist_ok=True)
 
     random_filename = f"{uuid.uuid4().hex}{ext}"
