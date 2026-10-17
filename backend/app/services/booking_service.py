@@ -215,27 +215,33 @@ class BookingService:
         # 2. Get or auto-provision Candidate User
         user_repo = UserRepository(self.db)
         user = await user_repo.get_by_email(req.email)
+        phone_val = (req.phone or "").strip()
+        years_exp = req.years_experience if req.years_experience is not None else 0.0
+        role_target = (req.target_role or "Candidate").strip()
+        comments_notes = (req.comments or req.additional_notes or "").strip() or None
+
         if not user:
             random_pwd = secrets.token_urlsafe(24)
             user, _ = await user_repo.create_user(
                 email=req.email,
                 password=random_pwd,
                 full_name=req.full_name,
-                phone=req.phone,
+                phone=phone_val,
                 role="CANDIDATE",
                 is_email_verified=True,
-                years_experience=req.years_experience,
+                years_experience=years_exp,
                 current_company=req.current_company,
-                target_role=req.target_role,
+                target_role=role_target,
                 technical_skills=req.technical_skills,
             )
         else:
             user.full_name = req.full_name
-            user.phone = req.phone
+            if phone_val:
+                user.phone = phone_val
             if user.profile:
-                user.profile.years_experience = req.years_experience
+                user.profile.years_experience = years_exp
                 user.profile.current_company = req.current_company.strip() if req.current_company else None
-                user.profile.target_role = req.target_role
+                user.profile.target_role = role_target
                 user.profile.technical_skills = req.technical_skills
             await self.db.commit()
 
@@ -251,20 +257,20 @@ class BookingService:
             if jd_file:
                 jd_file.user_id = user.id
 
-        # 4. Create InterviewRequest draft with authoritative 19,900 paise price
+        # 4. Create InterviewRequest draft with authoritative price snapshot
         booking = await self.repo.create_booking_draft(
             candidate_id=user.id,
             interview_type_id=category.id,
             price_snapshot_id=price_snapshot.id,
             amount_paise=price_snapshot.amount_paise,
             resume_file_id=req.resume_file_id,
-            years_experience=req.years_experience,
-            target_role=req.target_role,
+            years_experience=years_exp,
+            target_role=role_target,
             technical_skills=req.technical_skills,
             current_company=req.current_company,
             jd_file_id=req.jd_file_id,
             jd_text=req.jd_text,
-            additional_notes=req.additional_notes,
+            additional_notes=comments_notes,
         )
 
         # 5. Create Razorpay order

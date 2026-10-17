@@ -2,34 +2,34 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ShieldCheck, ArrowRight, User as UserIcon } from "lucide-react";
+import { Menu, X, ArrowRight, User as UserIcon } from "lucide-react";
 import { apiClient } from "@/services/api";
 import { User } from "@/types/auth";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in
     apiClient<{ user: User }>("/api/v1/auth/me")
       .then((data) => setUser(data.user))
       .catch(() => setUser(null));
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md transition-colors duration-200">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+          <div className="w-9 h-9 rounded-lg bg-slate-900 dark:bg-sky-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
             M
           </div>
           <div className="flex flex-col">
-            <span className="font-extrabold text-slate-900 tracking-tight text-lg leading-none">
-              MockInterview<span className="text-sky-600">.in</span>
+            <span className="font-extrabold text-slate-900 dark:text-white tracking-tight text-lg leading-none">
+              MockInterview<span className="text-sky-600 dark:text-sky-400">.in</span>
             </span>
-            <span className="text-[10px] font-semibold text-slate-500 tracking-wider uppercase mt-0.5">
+            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 tracking-wider uppercase mt-0.5">
               Human-Led Tech Prep
             </span>
           </div>
@@ -37,37 +37,43 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/#categories" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-            Interview Categories
+          <Link
+            href="/#categories"
+            className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            Categories
           </Link>
-          <Link href="/#pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-            Pricing (₹199)
+          <Link
+            href="/#pricing"
+            className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
+            Plans & Pricing
           </Link>
-          <Link href="/#how-it-works" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+          <Link
+            href="/#how-it-works"
+            className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
             How It Works
           </Link>
-          <Link href="/#faqs" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+          <Link
+            href="/#faqs"
+            className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
             FAQs
           </Link>
         </nav>
 
-        {/* Desktop CTA / Auth */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Desktop CTA / Auth / Theme Toggle */}
+        <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
+
           {user ? (
             <div className="flex items-center gap-3">
-              {user.role === "ADMIN" && (
-                <Link
-                  href="/admin"
-                  className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-md transition-colors"
-                >
-                  Admin Portal
-                </Link>
-              )}
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors"
               >
-                <UserIcon className="w-4 h-4 text-slate-600" />
+                <UserIcon className="w-4 h-4 text-slate-600 dark:text-slate-300" />
                 <span>{user.full_name}</span>
               </Link>
             </div>
@@ -75,27 +81,28 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2"
+                className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-3 py-2"
               >
                 Log In
               </Link>
               <Link
                 href="/#categories"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-lg shadow-sm transition-all"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 px-4 py-2 rounded-lg shadow-sm transition-all"
               >
-                <span>Book ₹199</span>
+                <span>Book Session</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </>
           )}
         </div>
 
-        {/* Mobile Hamburger Button */}
-        <div className="flex md:hidden">
+        {/* Mobile Actions: Theme Toggle & Hamburger */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+            className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -105,59 +112,60 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-6 space-y-3">
+        <div className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 pt-2 pb-6 space-y-3">
           <Link
             href="/#categories"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-medium text-slate-700 py-2"
+            className="block text-base font-medium text-slate-700 dark:text-slate-200 py-2 hover:text-sky-600 dark:hover:text-sky-400"
           >
-            Interview Categories
+            Categories
           </Link>
           <Link
             href="/#pricing"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-medium text-slate-700 py-2"
+            className="block text-base font-medium text-slate-700 dark:text-slate-200 py-2 hover:text-sky-600 dark:hover:text-sky-400"
           >
-            Pricing (₹199)
+            Plans & Pricing
           </Link>
           <Link
             href="/#how-it-works"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-medium text-slate-700 py-2"
+            className="block text-base font-medium text-slate-700 dark:text-slate-200 py-2 hover:text-sky-600 dark:hover:text-sky-400"
           >
             How It Works
           </Link>
           <Link
             href="/#faqs"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-medium text-slate-700 py-2"
+            className="block text-base font-medium text-slate-700 dark:text-slate-200 py-2 hover:text-sky-600 dark:hover:text-sky-400"
           >
             FAQs
           </Link>
-          <div className="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
+
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
             {user ? (
               <Link
                 href="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg bg-slate-100 text-slate-800 font-semibold text-sm"
+                className="w-full text-center py-2.5 font-semibold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 rounded-lg"
               >
-                Go to Dashboard
+                My Dashboard ({user.full_name})
               </Link>
             ) : (
               <>
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 rounded-lg border border-slate-200 text-slate-700 font-medium text-sm"
+                  className="w-full text-center py-2 text-slate-700 dark:text-slate-200 font-medium"
                 >
                   Log In
                 </Link>
                 <Link
                   href="/#categories"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center py-2.5 rounded-lg bg-slate-900 text-white font-semibold text-sm shadow-sm"
+                  className="w-full text-center py-2.5 font-semibold text-white bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 rounded-lg shadow-sm"
                 >
-                  Book Interview — ₹199
+                  Book Session
                 </Link>
               </>
             )}

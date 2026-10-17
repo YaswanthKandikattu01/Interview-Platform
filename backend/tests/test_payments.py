@@ -69,7 +69,7 @@ async def test_create_order_for_booking(async_client: AsyncClient, db_session: A
     data = res.json()
     assert "order_id" in data
     assert data["order_id"].startswith("order_")
-    assert data["amount_paise"] == 19900  # Exactly ₹199 (19,900 paise)
+    assert data["amount_paise"] == 49900  # Exactly ₹499 (49,900 paise) for System Design
     assert data["currency"] == "INR"
     assert data["category_title"] == "System Design Mock Interview"
 
@@ -259,5 +259,5 @@ async def test_admin_process_refund_flow(async_client: AsyncClient, db_session: 
     assert admin_refund.status_code == 200
     ref_data = admin_refund.json()
     assert ref_data["status"] == "refund_processed"
-    assert ref_data["amount_paise"] == 19900
+    assert ref_data["amount_paise"] == 49900
     assert "razorpay_refund_id" in ref_data

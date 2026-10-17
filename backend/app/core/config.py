@@ -65,50 +65,85 @@ class Settings(BaseSettings):
     PACKAGE_DURATION_MAX_MINUTES: int = 60
     PACKAGE_DURATION_DISPLAY: str = "45–60 minutes"
 
-    # Exactly 6 Allowed Categories
+    # Categories & Pricing Specifications
     ALLOWED_CATEGORIES: List[dict] = [
         {
             "slug": "system-design",
             "title": "System Design Mock Interview",
             "short_description": "Scalability, microservices, distributed caching, databases, and trade-off architecture.",
             "topics": ["High-Level Design", "Distributed Systems", "Database Sharding", "Caching Strategies", "API Gateway & Load Balancing"],
-            "display_order": 1
+            "display_order": 1,
+            "price_paise": 49900,  # ₹499
+            "duration_min_minutes": 120,
+            "duration_max_minutes": 120,
+            "duration_display": "2 Hours (120 mins)",
         },
         {
             "slug": "dsa",
             "title": "DSA Mock Interview",
             "short_description": "Data structures, algorithms, problem decomposition, optimal complexity, and clean code.",
             "topics": ["Dynamic Programming", "Graphs & Trees", "Binary Search", "Heaps & Hash Tables", "Time & Space Complexity"],
-            "display_order": 2
+            "display_order": 2,
+            "price_paise": 19900,  # ₹199
+            "duration_min_minutes": 45,
+            "duration_max_minutes": 60,
+            "duration_display": "45–60 minutes",
         },
         {
             "slug": "ai-engineer",
             "title": "AI Engineer Mock Interview",
             "short_description": "LLM system integration, RAG pipelines, prompt engineering, vector databases, and evaluation.",
             "topics": ["RAG Architecture", "Vector Embeddings & Search", "Fine-Tuning vs Prompting", "Agent Workflows", "LLM Guardrails & Evals"],
-            "display_order": 3
+            "display_order": 3,
+            "price_paise": 19900,  # ₹199
+            "duration_min_minutes": 45,
+            "duration_max_minutes": 60,
+            "duration_display": "45–60 minutes",
         },
         {
             "slug": "full-stack",
             "title": "Full Stack Mock Interview",
             "short_description": "End-to-end web engineering, frontend performance, robust backend APIs, and database patterns.",
             "topics": ["REST & GraphQL APIs", "Full-Stack Security", "State Management", "Data Modeling", "Web Vitals & Performance"],
-            "display_order": 4
+            "display_order": 4,
+            "price_paise": 19900,  # ₹199
+            "duration_min_minutes": 45,
+            "duration_max_minutes": 60,
+            "duration_display": "45–60 minutes",
         },
         {
             "slug": "frontend",
             "title": "Frontend Mock Interview",
             "short_description": "Modern React, Next.js architecture, TypeScript, responsive UX, accessibility, and optimization.",
             "topics": ["React & Component Design", "Rendering Strategies (SSR/SSG/ISR)", "Accessibility (a11y)", "Browser Performance", "State Architecture"],
-            "display_order": 5
+            "display_order": 5,
+            "price_paise": 19900,  # ₹199
+            "duration_min_minutes": 45,
+            "duration_max_minutes": 60,
+            "duration_display": "45–60 minutes",
         },
         {
             "slug": "backend",
             "title": "Backend Mock Interview",
             "short_description": "Concurrency, API resilience, relational/NoSQL schemas, caching, queues, and security.",
             "topics": ["API Design & REST", "SQL & Database Indexing", "Message Queues & Event-Driven", "Authentication & Security", "Performance Profiling"],
-            "display_order": 6
-        }
+            "display_order": 6,
+            "price_paise": 19900,  # ₹199
+            "duration_min_minutes": 45,
+            "duration_max_minutes": 60,
+            "duration_display": "45–60 minutes",
+        },
+        {
+            "slug": "resume-review",
+            "title": "Resume Review & Career Strategy",
+            "short_description": "Detailed line-by-line ATS resume review, bullet-point impact enhancement, and role targeting.",
+            "topics": ["ATS Optimization", "Quantified Bullet Points", "Project Framing", "Skills Alignment", "Actionable Improvement Plan"],
+            "display_order": 7,
+            "price_paise": 11900,  # ₹119
+            "duration_min_minutes": 30,
+            "duration_max_minutes": 45,
+            "duration_display": "Detailed Review & Feedback",
+        },
     ]
 
 

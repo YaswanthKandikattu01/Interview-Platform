@@ -12,8 +12,6 @@ import {
   Clock,
   Video,
   CheckCircle2,
-  Calendar,
-  AlertCircle,
   Loader2,
   User as UserIcon,
   BookOpen,
@@ -95,45 +93,45 @@ function DashboardContent() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+      <div className="min-h-[60vh] flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <Loader2 className="w-8 h-8 text-sky-600 dark:text-sky-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 transition-colors">
       {/* Top Banner / Welcome */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors">
         <div>
-          <span className="text-xs font-bold text-sky-600 uppercase tracking-wider block mb-1">
+          <span className="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider block mb-1">
             Candidate Portal
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
             Welcome back, {user?.full_name}
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            {user?.email} • {profile?.target_role || "Software Engineer"}
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            {user?.email} • {profile?.target_role || "Engineering Candidate"}
           </p>
         </div>
 
         <Link
           href="/#categories"
-          className="inline-flex items-center gap-2 py-3 px-5 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition-all"
+          className="inline-flex items-center gap-2 py-3 px-5 rounded-xl text-sm font-bold text-white bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 shadow-sm transition-all"
         >
-          <span>Book Another Interview (₹199)</span>
+          <span>Book Another Session</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
       {newBookingId && (
-        <div className="mb-8 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-4">
+        <div className="mb-8 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-amber-600 shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
             <div>
-              <span className="font-bold text-sm">Booking Draft Created!</span>
-              <p className="text-xs text-amber-800">
-                Proceed with payment to lock in your ₹199 session and trigger same-day interviewer outreach.
+              <span className="font-bold text-sm">Booking Created!</span>
+              <p className="text-xs text-amber-800 dark:text-amber-300">
+                Your session is secured. The interviewer has been notified and will email you today to arrange your session date & time.
               </p>
             </div>
           </div>
@@ -141,25 +139,25 @@ function DashboardContent() {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 mb-8">
+      <div className="flex gap-2 border-b border-slate-200 dark:border-slate-800 mb-8">
         <button
           onClick={() => setActiveTab("bookings")}
           className={`flex items-center gap-2 pb-3 px-4 font-semibold text-sm border-b-2 transition-all ${
             activeTab === "bookings"
-              ? "border-slate-900 text-slate-900"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "border-slate-900 dark:border-sky-500 text-slate-900 dark:text-white"
+              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
           }`}
         >
           <BookOpen className="w-4 h-4" />
-          <span>My Mock Interviews ({bookings.length})</span>
+          <span>My Sessions ({bookings.length})</span>
         </button>
 
         <button
           onClick={() => setActiveTab("profile")}
           className={`flex items-center gap-2 pb-3 px-4 font-semibold text-sm border-b-2 transition-all ${
             activeTab === "profile"
-              ? "border-slate-900 text-slate-900"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "border-slate-900 dark:border-sky-500 text-slate-900 dark:text-white"
+              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
           }`}
         >
           <UserIcon className="w-4 h-4" />
@@ -171,17 +169,17 @@ function DashboardContent() {
       {activeTab === "bookings" && (
         <div className="space-y-6">
           {bookings.length === 0 ? (
-            <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
-              <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-slate-900 mb-2">No Mock Interviews Booked Yet</h3>
-              <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
-                Practice 1-on-1 technical interviews with a senior engineer in System Design, DSA, AI, Full Stack, Frontend, or Backend.
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center transition-colors">
+              <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Sessions Booked Yet</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
+                Practice 1-on-1 technical interviews with a senior software engineer in System Design, DSA, AI, Full Stack, Frontend, Backend, or book a comprehensive Resume Review.
               </p>
               <Link
                 href="/#categories"
-                className="inline-flex items-center gap-2 py-3 px-6 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-sm"
+                className="inline-flex items-center gap-2 py-3 px-6 rounded-xl text-sm font-bold text-white bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 shadow-sm"
               >
-                <span>Explore Tracks & Book — ₹199</span>
+                <span>Explore Tracks & Book</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -189,34 +187,34 @@ function DashboardContent() {
             bookings.map((booking) => (
               <div
                 key={booking.id}
-                className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm hover:border-slate-300 transition-all"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-all"
               >
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4 mb-5">
                   <div>
                     <div className="flex items-center gap-3 mb-1">
-                      <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                      <span className="font-mono text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
                         {booking.booking_reference}
                       </span>
-                      <span className="text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md">
                         {booking.duration_display}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900">{booking.category_title}</h3>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">{booking.category_title}</h3>
                   </div>
 
                   <div className="sm:text-right">
-                    <span className="text-2xl font-black text-slate-900">₹199</span>
-                    <span className="block text-xs text-slate-500">Paid Amount</span>
+                    <span className="text-2xl font-black text-slate-900 dark:text-white">₹{booking.amount_paise / 100}</span>
+                    <span className="block text-xs text-slate-500 dark:text-slate-400">Paid Amount</span>
                   </div>
                 </div>
 
                 {/* Status-Aware Timeline Box */}
-                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 mb-5">
+                <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-4 mb-5">
                   <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+                    <Clock className="w-5 h-5 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900">{booking.status_headline}</h4>
-                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white">{booking.status_headline}</h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                         {booking.status_message}
                       </p>
                     </div>
@@ -225,12 +223,12 @@ function DashboardContent() {
 
                 {/* Meeting Link (if scheduled) */}
                 {booking.meeting_url && (
-                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                    <div className="flex items-center gap-2 text-emerald-900">
-                      <Video className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-300">
+                      <Video className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       <div>
-                        <span className="text-xs font-bold block">Interview Confirmed:</span>
-                        <span className="text-xs text-emerald-700">
+                        <span className="text-xs font-bold block">Session Confirmed:</span>
+                        <span className="text-xs text-emerald-700 dark:text-emerald-400">
                           {booking.scheduled_start
                             ? new Date(booking.scheduled_start).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
                             : "Scheduled"}
@@ -249,8 +247,8 @@ function DashboardContent() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 pt-2 border-t border-slate-100">
-                  <span>Target Role: {booking.target_role} ({booking.years_experience} yrs exp)</span>
+                <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <span>Target Role: {booking.target_role}</span>
                   <span>Booked: {new Date(booking.created_at).toLocaleDateString("en-IN")}</span>
                 </div>
               </div>
@@ -261,14 +259,14 @@ function DashboardContent() {
 
       {/* TAB 2: PROFILE EDITOR */}
       {activeTab === "profile" && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm max-w-2xl">
-          <h3 className="text-lg font-bold text-slate-900 mb-2">Professional Profile</h3>
-          <p className="text-xs text-slate-500 mb-6">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm max-w-2xl transition-colors">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Professional Profile</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
             This information is shared with your human interviewer so they can calibrate technical questions to your seniority.
           </p>
 
           {profileSuccess && (
-            <div className="flex items-center gap-2 p-3.5 mb-6 text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl">
+            <div className="flex items-center gap-2 p-3.5 mb-6 text-sm text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 rounded-xl">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{profileSuccess}</span>
             </div>
@@ -276,7 +274,7 @@ function DashboardContent() {
 
           <form onSubmit={handleUpdateProfile} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Target Role
               </label>
               <input
@@ -284,13 +282,13 @@ function DashboardContent() {
                 required
                 value={editTargetRole}
                 onChange={(e) => setEditTargetRole(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   Years of Experience
                 </label>
                 <input
@@ -301,12 +299,12 @@ function DashboardContent() {
                   required
                   value={editExperience}
                   onChange={(e) => setEditExperience(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   Current Company
                 </label>
                 <input
@@ -314,13 +312,13 @@ function DashboardContent() {
                   value={editCompany}
                   onChange={(e) => setEditCompany(e.target.value)}
                   placeholder="e.g. Swiggy, Amazon"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Technical Skills (comma-separated)
               </label>
               <input
@@ -328,7 +326,7 @@ function DashboardContent() {
                 value={editSkills}
                 onChange={(e) => setEditSkills(e.target.value)}
                 placeholder="Python, React, System Design, PostgreSQL"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
               />
             </div>
 
@@ -336,7 +334,7 @@ function DashboardContent() {
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="py-2.5 px-6 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 shadow-sm"
+                className="py-2.5 px-6 rounded-xl text-sm font-bold text-white bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 disabled:opacity-50 shadow-sm"
               >
                 {savingProfile ? "Saving..." : "Save Changes"}
               </button>
@@ -352,8 +350,8 @@ export default function CandidateDashboardPage() {
   return (
     <>
       <Navbar />
-      <main className="flex-1 bg-slate-50">
-        <Suspense fallback={<div>Loading dashboard...</div>}>
+      <main className="flex-1 bg-slate-50 dark:bg-slate-950 transition-colors">
+        <Suspense fallback={<div className="p-8 text-center text-slate-500">Loading dashboard...</div>}>
           <DashboardContent />
         </Suspense>
       </main>

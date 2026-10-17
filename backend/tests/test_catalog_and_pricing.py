@@ -15,8 +15,8 @@ async def test_get_categories_returns_exactly_six(async_client: AsyncClient, db_
     assert response.status_code == 200
     categories = response.json()
 
-    # STRICT CRITERIA: Exactly 6 categories
-    assert len(categories) == 6
+    # STRICT CRITERIA: Exactly 7 categories
+    assert len(categories) == 7
 
     expected_slugs = [
         "system-design",
@@ -25,19 +25,25 @@ async def test_get_categories_returns_exactly_six(async_client: AsyncClient, db_
         "full-stack",
         "frontend",
         "backend",
+        "resume-review",
     ]
     actual_slugs = [cat["slug"] for cat in categories]
     assert actual_slugs == expected_slugs
 
-    # STRICT CRITERIA: One package only: 45–60 minutes, ₹199 (19,900 paise)
+    # Pricing packages: System Design 49900, Resume Review 11900, Standard Tracks 19900
     for cat in categories:
         price = cat["active_price"]
         assert price is not None
-        assert price["amount_paise"] == 19900
         assert price["currency"] == "INR"
-        assert price["duration_display"] == "45–60 minutes"
-        assert price["duration_min_minutes"] == 45
-        assert price["duration_max_minutes"] == 60
+        if cat["slug"] == "system-design":
+            assert price["amount_paise"] == 49900
+            assert price["duration_display"] == "2 Hours (120 mins)"
+        elif cat["slug"] == "resume-review":
+            assert price["amount_paise"] == 11900
+            assert price["duration_display"] == "Detailed Review & Feedback"
+        else:
+            assert price["amount_paise"] == 19900
+            assert price["duration_display"] == "45–60 minutes"
         assert len(cat["detailed_topics"]) >= 3
 
 
@@ -51,7 +57,13 @@ async def test_get_category_by_slug_and_404(async_client: AsyncClient, db_sessio
     assert res.status_code == 200
     data = res.json()
     assert data["title"] == "System Design Mock Interview"
-    assert data["active_price"]["amount_paise"] == 19900
+    assert data["active_price"]["amount_paise"] == 49900
+    assert data["active_price"]["duration_display"] == "2 Hours (120 mins)"
+
+    # Resume review category
+    res_rr = await async_client.get("/api/v1/categories/resume-review")
+    assert res_rr.status_code == 200
+    assert res_rr.json()["active_price"]["amount_paise"] == 11900
 
     # Disallowed category (e.g. data-analyst, devops) must return 404
     res_invalid = await async_client.get("/api/v1/categories/data-analyst")
@@ -145,9 +157,9 @@ async def test_admin_pricing_update_flow(async_client: AsyncClient, db_session: 
     )
     assert invalid_price.status_code in [422, 400]
 
-    # 8. Restore canonical 19900 price so other tests retain the invariant
+    # 8. Restore canonical 49900 price so other tests retain the invariant
     await async_client.put(
         f"/api/v1/admin/categories/{cat_id}/price",
         headers={"Authorization": f"Bearer {admin_token}"},
-        json={"amount_paise": 19900}
+        json={"amount_paise": 49900}
     )

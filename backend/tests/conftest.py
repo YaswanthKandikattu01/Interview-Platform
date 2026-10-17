@@ -6,6 +6,7 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from app.core.database import Base, get_db
 from app.core.config import settings
+settings.APP_ENV = "test"
 from app.main import app
 
 # Use isolated SQLite test database

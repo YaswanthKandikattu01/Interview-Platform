@@ -180,7 +180,7 @@ async def test_booking_draft_creation_and_listing(async_client: AsyncClient, db_
     assert draft_res.status_code == 201
     draft_data = draft_res.json()
     assert draft_data["booking_reference"].startswith("MOCK-")
-    assert draft_data["amount_paise"] == 19900  # ₹199
+    assert draft_data["amount_paise"] == 49900  # ₹499 for system-design
     assert draft_data["currency"] == "INR"
     assert draft_data["category_slug"] == "system-design"
     assert draft_data["status_headline"] == "Booking Created"

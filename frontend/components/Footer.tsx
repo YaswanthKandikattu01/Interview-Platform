@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Mail, Clock, ShieldCheck } from "lucide-react";
+import { Mail, Clock } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-slate-900 text-slate-400 border-t border-slate-800">
+    <footer className="w-full bg-slate-900 dark:bg-slate-950 text-slate-400 border-t border-slate-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand Info */}
@@ -17,21 +17,22 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-slate-400 max-w-md leading-relaxed">
-              India&apos;s premium human-led mock interview platform. 100% live technical interviews with a senior software engineer across System Design, DSA, AI, Full Stack, Frontend, and Backend.
+              India&apos;s premium human-led mock interview platform. 100% live technical interviews and resume reviews conducted by an experienced senior software engineer.
             </p>
             <div className="flex items-center gap-2 text-xs text-slate-400 pt-2">
               <Clock className="w-4 h-4 text-emerald-400" />
-              <span>Operating in Asia/Kolkata (IST) • Same-Day Scheduling Contact</span>
+              <span>Operating in Asia/Kolkata (IST) • Same-Day Scheduling Contact Guarantee</span>
             </div>
           </div>
 
-          {/* Interview Categories */}
+          {/* Interview Categories & Packages */}
           <div>
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Categories
+              Programs & Pricing
             </h4>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/book/system-design" className="hover:text-white transition-colors">System Design (₹199)</Link></li>
+              <li><Link href="/book/system-design" className="hover:text-white transition-colors">System Design (₹499 • 2 Hours)</Link></li>
+              <li><Link href="/book/resume-review" className="hover:text-white transition-colors">Resume Review (₹119)</Link></li>
               <li><Link href="/book/dsa" className="hover:text-white transition-colors">DSA & Algorithms (₹199)</Link></li>
               <li><Link href="/book/ai-engineer" className="hover:text-white transition-colors">AI Engineer (₹199)</Link></li>
               <li><Link href="/book/full-stack" className="hover:text-white transition-colors">Full Stack (₹199)</Link></li>
@@ -48,8 +49,8 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm">
               <li><Link href="/#faqs" className="hover:text-white transition-colors">FAQs & SLA Cutoff</Link></li>
               <li><a href="mailto:support@mockinterviews.dev" className="inline-flex items-center gap-1.5 hover:text-white transition-colors"><Mail className="w-3.5 h-3.5 text-sky-400" /> support@mockinterviews.dev</a></li>
-              <li className="pt-2 text-xs text-slate-400">Razorpay Verified 19,900 Paise (₹199)</li>
-              <li className="text-xs text-slate-400">45–60 Minutes Session Guarantee</li>
+              <li className="pt-2 text-xs text-slate-400">100% Human Interviewer — No AI Bots</li>
+              <li className="text-xs text-slate-400">Verified Secure Payments</li>
             </ul>
           </div>
         </div>

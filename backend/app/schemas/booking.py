@@ -51,15 +51,16 @@ class InstantBookingRequest(BaseModel):
     category_slug: str = Field(..., min_length=2, max_length=50)
     full_name: str = Field(..., min_length=2, max_length=150)
     email: str = Field(..., min_length=5, max_length=255)
-    phone: str = Field(..., min_length=7, max_length=20)
-    years_experience: float = Field(..., ge=0.0, le=50.0)
-    target_role: str = Field(..., min_length=2, max_length=150)
+    resume_file_id: str = Field(..., min_length=10)
+    phone: Optional[str] = Field(None, max_length=25)
+    comments: Optional[str] = Field(None, max_length=3000)
+    years_experience: Optional[float] = Field(0.0, ge=0.0, le=50.0)
+    target_role: Optional[str] = Field("Candidate", max_length=150)
     current_company: Optional[str] = Field(None, max_length=150)
     technical_skills: List[str] = Field(default_factory=list)
-    resume_file_id: str = Field(..., min_length=10)
     jd_file_id: Optional[str] = None
     jd_text: Optional[str] = Field(None, max_length=10000)
-    additional_notes: Optional[str] = Field(None, max_length=2000)
+    additional_notes: Optional[str] = Field(None, max_length=3000)
 
 
 class InstantBookingResponse(BaseModel):

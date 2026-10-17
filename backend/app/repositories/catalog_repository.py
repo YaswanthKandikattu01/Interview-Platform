@@ -34,6 +34,11 @@ class CatalogRepository:
                 self.db.add(category)
                 await self.db.flush()
 
+            price_paise = cat_data.get("price_paise", settings.PACKAGE_PRICE_PAISE)
+            duration_min = cat_data.get("duration_min_minutes", settings.PACKAGE_DURATION_MIN_MINUTES)
+            duration_max = cat_data.get("duration_max_minutes", settings.PACKAGE_DURATION_MAX_MINUTES)
+            duration_display = cat_data.get("duration_display", settings.PACKAGE_DURATION_DISPLAY)
+
             # Check if active price exists for this category
             price_stmt = (
                 select(InterviewPrice)
@@ -49,15 +54,32 @@ class CatalogRepository:
                 price = InterviewPrice(
                     id=str(uuid.uuid4()),
                     interview_type_id=category.id,
-                    amount_paise=settings.PACKAGE_PRICE_PAISE,  # 19900 paise = ₹199
+                    amount_paise=price_paise,
                     currency="INR",
-                    duration_min_minutes=settings.PACKAGE_DURATION_MIN_MINUTES,
-                    duration_max_minutes=settings.PACKAGE_DURATION_MAX_MINUTES,
-                    duration_display=settings.PACKAGE_DURATION_DISPLAY,
+                    duration_min_minutes=duration_min,
+                    duration_max_minutes=duration_max,
+                    duration_display=duration_display,
                     is_active=True,
                 )
                 self.db.add(price)
                 await self.db.flush()
+            else:
+                # If price or duration changed, retire old price and create new active price
+                if active_price.amount_paise != price_paise or active_price.duration_display != duration_display:
+                    active_price.is_active = False
+                    active_price.retired_at = datetime.now(timezone.utc)
+                    new_price = InterviewPrice(
+                        id=str(uuid.uuid4()),
+                        interview_type_id=category.id,
+                        amount_paise=price_paise,
+                        currency="INR",
+                        duration_min_minutes=duration_min,
+                        duration_max_minutes=duration_max,
+                        duration_display=duration_display,
+                        is_active=True,
+                    )
+                    self.db.add(new_price)
+                    await self.db.flush()
 
         await self.db.commit()
 

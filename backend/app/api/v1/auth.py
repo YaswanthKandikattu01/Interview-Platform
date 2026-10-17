@@ -70,8 +70,8 @@ async def register(
         "message": "Registration successful. Please check your email to verify your account.",
         "user_id": user.id,
         "email": user.email,
-        # For development / testing convenience, verify_token is included when APP_ENV == 'development'
-        "dev_verification_token": verify_token if settings.APP_ENV == "development" else None
+        # For development / testing convenience, verify_token is included when APP_ENV in ('development', 'test')
+        "dev_verification_token": verify_token if settings.APP_ENV in ("development", "test") else None
     }
 
 
@@ -172,7 +172,7 @@ async def forgot_password(
     reset_token = await service.forgot_password(req.email)
     return {
         "message": "If this email exists in our records, a password reset link has been dispatched.",
-        "dev_reset_token": reset_token if settings.APP_ENV == "development" else None
+        "dev_reset_token": reset_token if settings.APP_ENV in ("development", "test") else None
     }
 
 
