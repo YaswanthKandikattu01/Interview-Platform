@@ -314,22 +314,22 @@ export default function BookInterviewPage() {
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
-              Our senior interviewer will contact you personally by email today to coordinate a mutually convenient date and time.
+              A booking confirmation has been sent to your email. Our interviewer will contact you personally by email today to coordinate a mutually convenient date and time.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
-                href="/dashboard"
+                href="/"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 text-white font-bold text-sm shadow-md transition-all"
               >
-                <span>Go to Candidate Dashboard</span>
+                <span>Return to Home</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/"
+                href="/#categories"
                 className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all"
               >
-                Return to Home
+                Book Another Program
               </Link>
             </div>
           </div>

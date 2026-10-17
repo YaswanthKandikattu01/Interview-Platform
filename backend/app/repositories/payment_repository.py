@@ -175,6 +175,14 @@ class PaymentRepository:
             select(Notification).where(Notification.idempotency_key == cand_notif_key)
         )
         if not existing_cand_notif.scalar_one_or_none():
+            category_slug = booking.interview_type.slug
+            duration_text = (
+                "2 Hours (120 mins)"
+                if category_slug == "system-design"
+                else ("Detailed Review & Feedback" if category_slug == "resume-review" else "45–60 minutes")
+            )
+            amount_text = f"₹{booking.amount_paise // 100}"
+
             cand_notif = Notification(
                 id=str(uuid.uuid4()),
                 interview_request_id=booking.id,
@@ -186,8 +194,8 @@ class PaymentRepository:
                 template_data={
                     "candidate_name": candidate.full_name,
                     "category_title": booking.interview_type.title,
-                    "duration_display": "45–60 minutes",
-                    "amount_display": "₹199",
+                    "duration_display": duration_text,
+                    "amount_display": amount_text,
                     "booking_reference": booking.booking_reference,
                     "payment_reference": razorpay_payment_id,
                 },
@@ -209,7 +217,7 @@ class PaymentRepository:
                 interview_request_id=booking.id,
                 idempotency_key=admin_notif_key,
                 recipient_email=settings.ADMIN_EMAIL,
-                recipient_name="Interviewer Admin",
+                recipient_name="Mock Interview Team",
                 template_name="ADMIN_NEW_BOOKING",
                 subject=f"[NEW BOOKING] {booking.interview_type.title} - {candidate.full_name}",
                 template_data={
@@ -217,11 +225,12 @@ class PaymentRepository:
                     "candidate_email": candidate.email,
                     "candidate_phone": candidate.phone,
                     "category_title": booking.interview_type.title,
-                    "duration_display": "45–60 minutes",
-                    "amount_display": "₹199",
+                    "duration_display": duration_text,
+                    "amount_display": amount_text,
                     "booking_reference": booking.booking_reference,
                     "payment_reference": razorpay_payment_id,
                     "contact_deadline_ist": deadline_ist_str,
+                    "comments": booking.booking_input.additional_notes if booking.booking_input else "None provided",
                     "target_role": booking.booking_input.target_role if booking.booking_input else "N/A",
                     "years_experience": booking.booking_input.years_experience if booking.booking_input else 0,
                 },
